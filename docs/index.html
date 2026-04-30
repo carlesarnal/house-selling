@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Búsqueda de vivienda — Barcelona</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f5f5f7; color: #1d1d1f; padding: 20px; }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .subtitle { color: #86868b; font-size: 14px; margin-bottom: 20px; }
+  .stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat { background: white; border-radius: 12px; padding: 16px 20px; min-width: 140px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .stat-value { font-size: 28px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: #86868b; margin-top: 2px; }
+  .stat-ok .stat-value { color: #34c759; }
+  .stat-warn .stat-value { color: #ff9500; }
+  .controls { background: white; border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .controls label { font-size: 13px; color: #86868b; }
+  .controls select, .controls input { font-size: 14px; padding: 6px 10px; border: 1px solid #d2d2d7; border-radius: 8px; background: #f5f5f7; }
+  .controls input[type=range] { width: 180px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  thead { background: #f5f5f7; }
+  th { text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600; color: #86868b; cursor: pointer; user-select: none; white-space: nowrap; border-bottom: 1px solid #e5e5ea; }
+  th:hover { color: #1d1d1f; }
+  th.sorted-asc::after { content: ' ▲'; }
+  th.sorted-desc::after { content: ' ▼'; }
+  td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f5f5f7; }
+  tr.favorite td { background: #f0fdf4; }
+  tr.over-budget td { opacity: 0.6; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .badge-ok { background: #d1fae5; color: #065f46; }
+  .badge-over { background: #fee2e2; color: #991b1b; }
+  .badge-pending { background: #fef3c7; color: #92400e; }
+  .badge-active { background: #d1fae5; color: #065f46; }
+  .badge-zone { background: #ede9fe; color: #5b21b6; }
+  .badge-star { background: #fef3c7; color: #92400e; }
+  a { color: #0066cc; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .score-bar { display: inline-block; width: 60px; height: 8px; background: #e5e5ea; border-radius: 4px; overflow: hidden; vertical-align: middle; margin-right: 6px; }
+  .score-fill { height: 100%; border-radius: 4px; }
+  .price-fmt { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .footer { text-align: center; color: #86868b; font-size: 12px; margin-top: 20px; }
+  @media (max-width: 900px) { table { display: block; overflow-x: auto; } }
+</style>
+</head>
+<body>
+
+<h1>Búsqueda de vivienda — Barcelona</h1>
+<p class="subtitle">Última actualización: 30 abril 2026 (2ª ejecución) · Modo: VIGILANCIA</p>
+
+<div class="stats" id="stats"></div>
+
+<div class="controls">
+  <div>
+    <label>Zona</label><br>
+    <select id="filterZona"><option value="">Todas</option></select>
+  </div>
+  <div>
+    <label>Cuota máx.</label><br>
+    <select id="filterCuota">
+      <option value="">Sin filtro</option>
+      <option value="1500" selected>≤ 1.500€</option>
+      <option value="1600">≤ 1.600€</option>
+      <option value="9999">Todas</option>
+    </select>
+  </div>
+  <div>
+    <label>Precio máx.</label><br>
+    <input type="range" id="filterPrecio" min="400000" max="650000" step="10000" value="620000">
+    <span id="precioLabel">620.000€</span>
+  </div>
+  <div>
+    <label>Verificación</label><br>
+    <select id="filterVerif">
+      <option value="">Todas</option>
+      <option value="activo">Solo activos</option>
+      <option value="pendiente">Solo pendientes</option>
+    </select>
+  </div>
+  <div>
+    <label>Ordenar</label><br>
+    <select id="sortField">
+      <option value="puntuacion-desc">Puntuación ↓</option>
+      <option value="precio-asc">Precio ↑</option>
+      <option value="cuota-asc">Cuota ↑</option>
+      <option value="superficie-desc">Superficie ↓</option>
+    </select>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th data-sort="zona">Zona</th>
+      <th data-sort="direccion">Dirección</th>
+      <th data-sort="precio">Precio</th>
+      <th data-sort="superficie">m²</th>
+      <th data-sort="terraza">Terraza</th>
+      <th data-sort="hab">Hab</th>
+      <th data-sort="banos">Baños</th>
+      <th data-sort="planta">Planta</th>
+      <th data-sort="cuota">Cuota/mes</th>
+      <th data-sort="puntuacion">Punt.</th>
+      <th>Estado</th>
+      <th>Verif.</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<p class="footer">Hipoteca: 30 años, fija 2,4%, entrada = 273.000€ − gastos compra (10%)</p>
+
+<script>
+const listings = [
+  {
+    id: 1, zona: "El Putxet", direccion: "Av. República Argentina",
+    precio: 514000, superficie: 96, terraza: "?", hab: 3, banos: "?",
+    planta: "6ª", ascensor: true, estado: "Exterior",
+    cuota: 1140, puntuacion: 5, maxPunt: 18,
+    verificacion: "pendiente", dias: 30, favorita: true,
+    link: "https://www.idealista.com/inmueble/110971822/",
+    notas: "Mejor relación zona-precio. Posible 2º piso en mismo edificio."
+  },
+  {
+    id: 7, zona: "El Putxet", direccion: "Reformado, terraza (calle estrecha)",
+    precio: 570000, superficie: 92, terraza: "Sí", hab: 3, banos: 2,
+    planta: "2ª", ascensor: true, estado: "Reformado",
+    cuota: 1380, puntuacion: 7, maxPunt: 18,
+    verificacion: "pendiente", dias: 20, favorita: true,
+    link: "https://www.idealista.com/inmueble/111219553/",
+    notas: "Reformado con 2 baños en Putxet. Puede estar retirado."
+  },
+  {
+    id: 6, zona: "El Putxet", direccion: "Craywinckel (calle estrecha)",
+    precio: 590000, superficie: 114, terraza: "?", hab: 3, banos: "?",
+    planta: "2ª", ascensor: "?", estado: "Por confirmar",
+    cuota: 1466, puntuacion: 4, maxPunt: 18,
+    verificacion: "pendiente", dias: 30, favorita: false,
+    link: "https://www.idealista.com/inmueble/111148227/",
+    notas: "114 m² = mayor superficie en Putxet. Calle estrecha, buena luz."
+  },
+  {
+    id: 2, zona: "Sant Antoni", direccion: "C/ Llança, 7ª planta",
+    precio: 620000, superficie: 115, terraza: "25 m²", hab: 4, banos: 2,
+    planta: "7ª", ascensor: true, estado: "A reformar (energía G)",
+    cuota: 1595, puntuacion: 7, maxPunt: 18,
+    verificacion: "activo", dias: 66, favorita: false,
+    link: "https://english.habitaclia.com/buy-penthouse-sant_antoni-barcelona-i15102004478997.htm",
+    notas: "✅ Activo (verificado 30/04). El más amplio. Cuota fuera de límite. Negociar a ~570k."
+  },
+  {
+    id: 3, zona: "Les Corts", direccion: "La Maternitat, 5ª planta",
+    precio: 595000, superficie: 95, terraza: "?", hab: 3, banos: "?",
+    planta: "5ª", ascensor: true, estado: "Exterior, luminoso",
+    cuota: 1488, puntuacion: 2, maxPunt: 18,
+    verificacion: "pendiente", dias: 15, favorita: false,
+    link: "https://www.idealista.com/inmueble/111309860/",
+    notas: "Ático luminoso cerca Camp Nou."
+  },
+  {
+    id: 4, zona: "Sant Antoni", direccion: "C/ Calàbria, 4ª planta",
+    precio: 600000, superficie: 115, terraza: "?", hab: 3, banos: "?",
+    planta: "4ª", ascensor: true, estado: "Exterior",
+    cuota: 1509, puntuacion: 1, maxPunt: 18,
+    verificacion: "pendiente", dias: 45, favorita: false,
+    link: "https://www.idealista.com/inmueble/110659748/",
+    notas: "Espacioso pero cuota fuera de límite."
+  },
+  {
+    id: 5, zona: "La Salut", direccion: "Ronda del Guinardó, 4ª planta",
+    precio: 599000, superficie: 96, terraza: "6 m²", hab: 3, banos: 2,
+    planta: "4ª", ascensor: true, estado: "Necesita actualización",
+    cuota: 1505, puntuacion: 7, maxPunt: 18,
+    verificacion: "activo", dias: 66, favorita: false,
+    link: "https://english.habitaclia.com/buy-penthouse-la_salut-barcelona-i11367004438115.htm",
+    notas: "✅ Activo (verificado 30/04). Parking incluido. Terraza muy pequeña (6 m²). Negociar a 590k."
+  },
+  {
+    id: 8, zona: "La Salut", direccion: "Travesera de Dalt, cerca Parc Güell",
+    precio: null, superficie: 102, terraza: "?", hab: 3, banos: 2,
+    planta: "?", ascensor: "?", estado: "Buen estado",
+    cuota: null, puntuacion: 4, maxPunt: 18,
+    verificacion: "pendiente", dias: null, favorita: false,
+    link: "https://www.idealista.com/inmueble/94660799/",
+    notas: "Sin precio. Suite con hidromasaje. ID antiguo, posiblemente retirado."
+  },
+  {
+    id: 9, zona: "La Salut", direccion: "C/ Escorial 181, seminuevo, energía A",
+    precio: null, superficie: 97, terraza: "14 m²", hab: "?", banos: "?",
+    planta: "?", ascensor: "?", estado: "Seminuevo, aerotermia",
+    cuota: null, puntuacion: 3, maxPunt: 18,
+    verificacion: "pendiente", dias: null, favorita: false,
+    link: "https://www.idealista.com/inmueble/108057306/",
+    notas: "Eficiencia A + aerotermia. Sin precio confirmado."
+  }
+];
+
+function fmt(n) { return n ? n.toLocaleString('es-ES') + '€' : '—'; }
+
+function renderStats(filtered) {
+  const total = filtered.length;
+  const okCuota = filtered.filter(l => l.cuota && l.cuota <= 1500).length;
+  const activos = filtered.filter(l => l.verificacion === 'activo').length;
+  const avgPrecio = filtered.filter(l=>l.precio).reduce((a,l)=>a+l.precio,0) / (filtered.filter(l=>l.precio).length||1);
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Opciones</div></div>
+    <div class="stat stat-ok"><div class="stat-value">${okCuota}</div><div class="stat-label">Cuota ≤ 1.500€</div></div>
+    <div class="stat"><div class="stat-value">${activos}</div><div class="stat-label">Verificados</div></div>
+    <div class="stat stat-warn"><div class="stat-value">${total - activos}</div><div class="stat-label">Pendientes</div></div>
+    <div class="stat"><div class="stat-value">${Math.round(avgPrecio/1000)}k</div><div class="stat-label">Precio medio</div></div>
+  `;
+}
+
+function scoreColor(pct) {
+  if (pct >= 0.5) return '#34c759';
+  if (pct >= 0.3) return '#ff9500';
+  return '#ff3b30';
+}
+
+function render() {
+  const zona = document.getElementById('filterZona').value;
+  const cuotaMax = parseInt(document.getElementById('filterCuota').value) || 99999;
+  const precioMax = parseInt(document.getElementById('filterPrecio').value);
+  const verif = document.getElementById('filterVerif').value;
+  const [sortKey, sortDir] = document.getElementById('sortField').value.split('-');
+
+  document.getElementById('precioLabel').textContent = precioMax.toLocaleString('es-ES') + '€';
+
+  let filtered = listings.filter(l => {
+    if (zona && l.zona !== zona) return false;
+    if (l.cuota && l.cuota > cuotaMax) return false;
+    if (l.precio && l.precio > precioMax) return false;
+    if (verif === 'activo' && l.verificacion !== 'activo') return false;
+    if (verif === 'pendiente' && l.verificacion !== 'pendiente') return false;
+    return true;
+  });
+
+  filtered.sort((a, b) => {
+    let va, vb;
+    switch(sortKey) {
+      case 'puntuacion': va = a.puntuacion; vb = b.puntuacion; break;
+      case 'precio': va = a.precio||999999; vb = b.precio||999999; break;
+      case 'cuota': va = a.cuota||999999; vb = b.cuota||999999; break;
+      case 'superficie': va = a.superficie; vb = b.superficie; break;
+    }
+    return sortDir === 'asc' ? va - vb : vb - va;
+  });
+
+  renderStats(filtered);
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = filtered.map(l => {
+    const pct = l.puntuacion / l.maxPunt;
+    const color = scoreColor(pct);
+    const cuotaBadge = l.cuota ? (l.cuota <= 1500
+      ? `<span class="badge badge-ok">${l.cuota.toLocaleString('es-ES')}€</span>`
+      : `<span class="badge badge-over">${l.cuota.toLocaleString('es-ES')}€</span>`)
+      : '<span class="badge badge-pending">—</span>';
+    const verifBadge = l.verificacion === 'activo'
+      ? '<span class="badge badge-active">Activo</span>'
+      : '<span class="badge badge-pending">Pendiente</span>';
+    const rowClass = l.favorita ? 'favorite' : (l.cuota && l.cuota > 1500 ? 'over-budget' : '');
+    return `<tr class="${rowClass}" title="${l.notas}">
+      <td><span class="badge badge-zone">${l.zona}</span></td>
+      <td>${l.favorita ? '⭐ ' : ''}${l.direccion}</td>
+      <td class="price-fmt">${fmt(l.precio)}</td>
+      <td>${l.superficie}</td>
+      <td>${l.terraza}</td>
+      <td>${l.hab}</td>
+      <td>${l.banos}</td>
+      <td>${l.planta}${l.ascensor === true ? ' 🛗' : ''}</td>
+      <td>${cuotaBadge}</td>
+      <td><span class="score-bar"><span class="score-fill" style="width:${pct*100}%;background:${color}"></span></span>${l.puntuacion}/${l.maxPunt}</td>
+      <td>${l.estado}</td>
+      <td>${verifBadge}</td>
+      <td><a href="${l.link}" target="_blank">Ver →</a></td>
+    </tr>`;
+  }).join('');
+}
+
+// Populate zone filter
+const zones = [...new Set(listings.map(l => l.zona))].sort();
+const sel = document.getElementById('filterZona');
+zones.forEach(z => { const o = document.createElement('option'); o.value = z; o.textContent = z; sel.appendChild(o); });
+
+// Event listeners
+['filterZona','filterCuota','filterPrecio','filterVerif','sortField'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+});
+
+render();
+</script>
+</body>
+</html>
