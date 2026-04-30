@@ -3,168 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pisos en Les Corts — Barcelona</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f5f5f7; color: #1d1d1f; padding: 20px; }
-  h1 { font-size: 24px; margin-bottom: 4px; }
-  .subtitle { color: #86868b; font-size: 14px; margin-bottom: 20px; }
-  .stats { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
-  .stat { background: white; border-radius: 12px; padding: 16px 20px; min-width: 140px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-  .stat-value { font-size: 28px; font-weight: 700; }
-  .stat-label { font-size: 12px; color: #86868b; margin-top: 2px; }
-  .controls { background: white; border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-  .controls label { font-size: 13px; color: #86868b; }
-  .controls select, .controls input { font-size: 14px; padding: 6px 10px; border: 1px solid #d2d2d7; border-radius: 8px; background: #f5f5f7; }
-  .controls input[type=range] { width: 180px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
-  .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); transition: box-shadow .2s; position: relative; }
-  .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.12); }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-  .card-price { font-size: 22px; font-weight: 700; }
-  .card-score { display: flex; align-items: center; gap: 6px; }
-  .score-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; }
-  .card-address { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-  .card-details { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; font-size: 13px; color: #424245; margin-bottom: 12px; }
-  .card-details dt { color: #86868b; }
-  .card-details dd { font-weight: 500; }
-  .card-notes { font-size: 12px; color: #86868b; line-height: 1.4; margin-bottom: 12px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
-  .card-link { display: inline-block; background: #0066cc; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; }
-  .card-link:hover { background: #0055b3; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-right: 4px; }
-  .badge-hab { background: #ede9fe; color: #5b21b6; }
-  .badge-m2 { background: #e0f2fe; color: #075985; }
-  .badge-terraza { background: #d1fae5; color: #065f46; }
-  .badge-parking { background: #fef3c7; color: #92400e; }
-  .badge-reformado { background: #fce7f3; color: #9d174d; }
-  .card-badges { margin-bottom: 10px; }
-  .card.top-pick { border: 2px solid #34c759; }
-  .card.top-pick::before { content: 'TOP'; position: absolute; top: -8px; right: 16px; background: #34c759; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
-  .empty { text-align: center; color: #86868b; padding: 40px; font-size: 15px; }
-  .footer { text-align: center; color: #86868b; font-size: 12px; margin-top: 20px; }
-  .also-link { font-size: 11px; color: #86868b; margin-top: 6px; }
-  .also-link a { color: #86868b; }
-</style>
+<title>Les Corts — Pisos 2-3 habitaciones</title>
+<link rel="stylesheet" href="shared.css">
 </head>
 <body>
 
-<h1>Pisos en Les Corts — Barcelona</h1>
+<a class="back-link" href="index.html">← Volver al índice</a>
+<h1>Les Corts — Pisos 2-3 habitaciones</h1>
 <p class="subtitle">Última actualización: 30 abril 2026 · 2-3 hab, balcón/terraza, planta 1ª+, ≤500.000€</p>
 
 <div class="stats" id="stats"></div>
 
 <div class="controls">
-  <div>
-    <label>Precio máx.</label><br>
-    <input type="range" id="filterPrecio" min="200000" max="500000" step="10000" value="500000">
-    <span id="precioLabel">500.000€</span>
-  </div>
-  <div>
-    <label>Habitaciones</label><br>
-    <select id="filterHab">
-      <option value="">Todas</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-    </select>
-  </div>
-  <div>
-    <label>Ascensor</label><br>
-    <select id="filterAscensor">
-      <option value="">Cualquiera</option>
-      <option value="si">Con ascensor</option>
-    </select>
-  </div>
-  <div>
-    <label>Ordenar</label><br>
-    <select id="sortField">
-      <option value="puntuacion-desc">Puntuación ↓</option>
-      <option value="precio-asc">Precio ↑</option>
-      <option value="superficie-desc">Superficie ↓</option>
-    </select>
-  </div>
+  <div class="search-icon"><label>Buscar</label><input type="text" id="filterText" placeholder="Dirección..."></div>
+  <div><label>Precio máx.</label><input type="range" id="filterPrecio" min="200000" max="500000" step="10000" value="500000"><span id="precioLabel"> 500.000€</span></div>
+  <div><label>Habitaciones</label><select id="filterHab"><option value="">Todas</option><option value="2">2</option><option value="3">3</option></select></div>
+  <div><label>Ascensor</label><select id="filterAscensor"><option value="">Cualquiera</option><option value="si">Con ascensor</option></select></div>
+  <div><label>Favoritos</label><select id="filterFav"><option value="">Todos</option><option value="si">Solo ⭐</option></select></div>
+  <div><label>Ordenar</label><select id="sortField"><option value="puntuacion-desc">Puntuación ↓</option><option value="precio-asc">Precio ↑</option><option value="eurm2-asc">€/m² ↑</option><option value="superficie-desc">Superficie ↓</option></select></div>
 </div>
+
+<table>
+  <thead>
+    <tr>
+      <th>⭐</th>
+      <th>Dirección</th>
+      <th>Precio</th>
+      <th>m²</th>
+      <th>€/m²</th>
+      <th>Terraza</th>
+      <th>Hab</th>
+      <th>Baños</th>
+      <th>Planta</th>
+      <th>Punt.</th>
+      <th>Estado</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
 
 <div class="cards" id="cards"></div>
 
-<p class="footer">Datos de Habitaclia, Fotocasa e Idealista · Abril 2026</p>
+<p class="footer">⭐ se guardan en tu navegador · Les Corts, Barcelona</p>
 
 <script>
 const listings = [
   {
-    direccion: "Plaça del Centre — Obra reciente",
+    id: 101, direccion: "Plaça del Centre — Obra reciente",
     precio: 485000, superficie: 85, terraza: "Balcón", hab: 2, banos: 2,
     planta: "Alta", ascensor: true, estado: "Obra reciente (2008)",
-    puntuacion: 7, maxPunt: 12, topPick: true,
-    parking: true, reformado: true,
+    puntuacion: 7, maxPunt: 12, parking: true, reformado: true,
     link: "https://english.habitaclia.com/buy-flat-barri_de_les_corts-barcelona-i9873002105043.htm",
-    alsoIn: null,
-    notas: "85 m² con parking incluido, 2 baños, AC por conductos. Cerca metro L3 Plaça del Centre y estación Sants. Certificado energético G. Confirmar planta exacta."
+    notas: "85 m² con parking incluido, 2 baños, AC por conductos. Cerca metro L3 y estación Sants."
   },
   {
-    direccion: "C/ Déu i Mata — Ático con azotea 70 m²",
+    id: 102, direccion: "C/ Déu i Mata — Ático con azotea 70 m²",
     precio: 499000, superficie: 70, terraza: "15 m² + azotea 70 m²", hab: 2, banos: 1,
     planta: "3ª", ascensor: false, estado: "Renovado, finca 1930",
-    puntuacion: 6, maxPunt: 12, topPick: true,
-    parking: false, reformado: true,
+    puntuacion: 6, maxPunt: 12, parking: false, reformado: true,
     link: "https://english.habitaclia.com/buy-penthouse-barri_de_les_corts-barcelona-i53071000000154.htm",
-    alsoIn: "https://english.habitaclia.com/buy-penthouse-street_de_deu_i_mata_0_barri_de_les_corts-barcelona-i500006039538.htm",
-    notas: "Azotea privada de 70 m² — el mayor espacio exterior del listado. Sin ascensor (3ª planta). Cocina abierta, buena luz. A 200 m de L'Illa Diagonal."
+    notas: "Azotea privada de 70 m². Sin ascensor (3ª planta). A 200 m de L'Illa Diagonal."
   },
   {
-    direccion: "C/ Gelabert — Ático planta 8ª, vistas jardines",
+    id: 103, direccion: "C/ Gelabert — Ático planta 8ª, vistas jardines",
     precio: 359000, superficie: 60, terraza: "Terraza pequeña", hab: 2, banos: null,
     planta: "8ª", ascensor: true, estado: "Por confirmar",
-    puntuacion: 5, maxPunt: 12, topPick: true,
-    parking: false, reformado: false,
+    puntuacion: 5, maxPunt: 12, parking: false, reformado: false,
     link: "https://www.idealista.com/venta-viviendas/barcelona/les-corts/con-aticos/",
-    alsoIn: null,
-    notas: "El más económico. Planta 8ª con vistas a jardines Joan Altisent, junto a Av. Josep Tarradellas. Exterior con mucha luz. 60 m² justos. Buscar en Idealista: Gelabert 359.000€."
+    notas: "El más económico. Vistas a jardines Joan Altisent. 60 m² justos. Buscar en Idealista: Gelabert 359k."
   },
   {
-    direccion: "C/ Comandante Benítez — Ático planta 7ª",
+    id: 104, direccion: "C/ Comandante Benítez — Ático planta 7ª",
     precio: 495000, superficie: 60, terraza: "25 m²", hab: 2, banos: null,
     planta: "7ª", ascensor: null, estado: "Por confirmar",
-    puntuacion: 3, maxPunt: 12, topPick: false,
-    parking: false, reformado: false,
+    puntuacion: 3, maxPunt: 12, parking: false, reformado: false,
     link: "https://www.idealista.com/venta-viviendas/barcelona/les-corts/con-aticos/",
-    alsoIn: null,
-    notas: "Terraza de 25 m² en 7ª planta orientación Este. Zona La Maternitat, junto a Gran Via Carles III. Confirmar precio exacto (495-515k) y si tiene ascensor."
+    notas: "Terraza 25 m² orientación Este. Zona La Maternitat. Confirmar ascensor y precio exacto."
   }
 ];
 
-function fmt(n) { return n ? n.toLocaleString('es-ES') + '€' : '—'; }
+function getFavs() { try { return JSON.parse(localStorage.getItem('lc-favs') || '[]'); } catch { return []; } }
+function setFavs(f) { localStorage.setItem('lc-favs', JSON.stringify(f)); }
+function toggleFav(id) { const f = getFavs(); const i = f.indexOf(id); if (i >= 0) f.splice(i, 1); else f.push(id); setFavs(f); render(); }
 
-function scoreColor(pct) {
-  if (pct >= 0.5) return '#34c759';
-  if (pct >= 0.3) return '#ff9500';
-  return '#ff3b30';
-}
+function fmt(n) { return n ? n.toLocaleString('es-ES') + '€' : '—'; }
+function scoreColor(pct) { return pct >= 0.5 ? '#34c759' : pct >= 0.3 ? '#ff9500' : '#ff3b30'; }
 
 function renderStats(filtered) {
   const total = filtered.length;
-  const minP = Math.min(...filtered.filter(l=>l.precio).map(l=>l.precio));
-  const maxP = Math.max(...filtered.filter(l=>l.precio).map(l=>l.precio));
+  const minP = filtered.filter(l=>l.precio).map(l=>l.precio);
   const avgM2 = Math.round(filtered.reduce((a,l)=>a+l.superficie,0) / (total||1));
   document.getElementById('stats').innerHTML = `
     <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Opciones</div></div>
-    <div class="stat"><div class="stat-value">${Math.round(minP/1000)}k</div><div class="stat-label">Desde</div></div>
-    <div class="stat"><div class="stat-value">${Math.round(maxP/1000)}k</div><div class="stat-label">Hasta</div></div>
+    <div class="stat"><div class="stat-value">${minP.length ? Math.round(Math.min(...minP)/1000)+'k' : '—'}</div><div class="stat-label">Desde</div></div>
+    <div class="stat"><div class="stat-value">${minP.length ? Math.round(Math.max(...minP)/1000)+'k' : '—'}</div><div class="stat-label">Hasta</div></div>
     <div class="stat"><div class="stat-value">${avgM2}</div><div class="stat-label">m² medio</div></div>
+    <div class="stat"><div class="stat-value">${getFavs().length}</div><div class="stat-label">Favoritos ⭐</div></div>
   `;
 }
 
 function render() {
+  const text = document.getElementById('filterText').value.toLowerCase();
   const precioMax = parseInt(document.getElementById('filterPrecio').value);
   const habFilter = document.getElementById('filterHab').value;
   const ascFilter = document.getElementById('filterAscensor').value;
+  const favFilter = document.getElementById('filterFav').value;
   const [sortKey, sortDir] = document.getElementById('sortField').value.split('-');
+  const favs = getFavs();
 
-  document.getElementById('precioLabel').textContent = precioMax.toLocaleString('es-ES') + '€';
+  document.getElementById('precioLabel').textContent = ` ${precioMax.toLocaleString('es-ES')}€`;
 
-  let filtered = listings.filter(l => {
+  let filtered = listings.map(l => ({ ...l, eurm2: l.precio ? Math.round(l.precio/l.superficie) : null }));
+
+  filtered = filtered.filter(l => {
+    if (text && !(l.direccion + ' ' + l.notas).toLowerCase().includes(text)) return false;
     if (l.precio && l.precio > precioMax) return false;
     if (habFilter && l.hab != parseInt(habFilter)) return false;
     if (ascFilter === 'si' && l.ascensor !== true) return false;
+    if (favFilter === 'si' && !favs.includes(l.id)) return false;
     return true;
   });
 
@@ -173,6 +130,7 @@ function render() {
     switch(sortKey) {
       case 'puntuacion': va = a.puntuacion; vb = b.puntuacion; break;
       case 'precio': va = a.precio||999999; vb = b.precio||999999; break;
+      case 'eurm2': va = a.eurm2||999999; vb = b.eurm2||999999; break;
       case 'superficie': va = a.superficie; vb = b.superficie; break;
     }
     return sortDir === 'asc' ? va - vb : vb - va;
@@ -180,49 +138,59 @@ function render() {
 
   renderStats(filtered);
 
-  const container = document.getElementById('cards');
-  if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty">No hay opciones con estos filtros</div>';
-    return;
-  }
-
-  container.innerHTML = filtered.map(l => {
+  // Table
+  document.getElementById('tbody').innerHTML = filtered.map(l => {
     const pct = l.puntuacion / l.maxPunt;
     const color = scoreColor(pct);
-    return `
-    <div class="card ${l.topPick ? 'top-pick' : ''}">
+    const isFav = favs.includes(l.id);
+    return `<tr title="${l.notas}">
+      <td><span class="star ${isFav?'active':''}" onclick="toggleFav(${l.id})">⭐</span></td>
+      <td>${l.direccion}</td>
+      <td class="price-fmt">${fmt(l.precio)}</td>
+      <td>${l.superficie}</td>
+      <td>${l.eurm2 ? l.eurm2.toLocaleString('es-ES')+'€' : '—'}</td>
+      <td>${l.terraza}</td>
+      <td>${l.hab}</td>
+      <td>${l.banos || '?'}</td>
+      <td>${l.planta}${l.ascensor===true?' 🛗':l.ascensor===false?' ✗':''}</td>
+      <td><span class="score-bar"><span class="score-fill" style="width:${pct*100}%;background:${color}"></span></span>${l.puntuacion}/${l.maxPunt}</td>
+      <td>${l.estado}</td>
+      <td><a href="${l.link}" target="_blank">Ver →</a></td>
+    </tr>`;
+  }).join('');
+
+  // Cards (mobile)
+  document.getElementById('cards').innerHTML = filtered.map(l => {
+    const pct = l.puntuacion / l.maxPunt;
+    const color = scoreColor(pct);
+    const isFav = favs.includes(l.id);
+    return `<div class="card">
       <div class="card-top">
         <div class="card-price">${fmt(l.precio)}</div>
-        <div class="card-score">
-          <div class="score-circle" style="background:${color}">${l.puntuacion}</div>
-          <span style="font-size:11px;color:#86868b">/ ${l.maxPunt}</span>
-        </div>
+        <span class="star ${isFav?'active':''}" onclick="toggleFav(${l.id})">⭐</span>
       </div>
       <div class="card-address">${l.direccion}</div>
       <div class="card-badges">
-        <span class="badge badge-hab">${l.hab} hab</span>
-        <span class="badge badge-m2">${l.superficie} m²</span>
-        ${l.terraza ? `<span class="badge badge-terraza">${l.terraza}</span>` : ''}
-        ${l.parking ? '<span class="badge badge-parking">Parking</span>' : ''}
-        ${l.reformado ? '<span class="badge badge-reformado">Reformado</span>' : ''}
+        <span class="badge badge-zone">${l.hab} hab</span>
+        <span class="badge" style="background:#e0f2fe;color:#075985">${l.superficie} m²</span>
+        ${l.parking ? '<span class="badge" style="background:#fef3c7;color:#92400e">Parking</span>' : ''}
+        ${l.reformado ? '<span class="badge" style="background:#fce7f3;color:#9d174d">Reformado</span>' : ''}
       </div>
       <dl class="card-details">
-        <dt>Planta</dt><dd>${l.planta || '?'}${l.ascensor === true ? ' · Ascensor' : l.ascensor === false ? ' · Sin ascensor' : ''}</dd>
+        <dt>€/m²</dt><dd>${l.eurm2 ? l.eurm2.toLocaleString('es-ES')+'€' : '?'}</dd>
+        <dt>Planta</dt><dd>${l.planta}${l.ascensor===true?' · Ascensor':l.ascensor===false?' · Sin ascensor':''}</dd>
         <dt>Baños</dt><dd>${l.banos || '?'}</dd>
-        <dt>Estado</dt><dd>${l.estado}</dd>
-        <dt>€/m²</dt><dd>${l.precio ? Math.round(l.precio/l.superficie).toLocaleString('es-ES') + '€' : '—'}</dd>
+        <dt>Terraza</dt><dd>${l.terraza}</dd>
       </dl>
       <div class="card-notes">${l.notas}</div>
       <a class="card-link" href="${l.link}" target="_blank">Ver anuncio →</a>
-      ${l.alsoIn ? `<div class="also-link">También en: <a href="${l.alsoIn}" target="_blank">otro portal</a></div>` : ''}
     </div>`;
   }).join('');
 }
 
-['filterPrecio','filterHab','filterAscensor','sortField'].forEach(id => {
+['filterText','filterPrecio','filterHab','filterAscensor','filterFav','sortField'].forEach(id => {
   document.getElementById(id).addEventListener('input', render);
 });
-
 render();
 </script>
 </body>

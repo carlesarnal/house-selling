@@ -1,0 +1,99 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f5f5f7; color: #1d1d1f; padding: 20px; max-width: 1400px; margin: 0 auto; }
+h1 { font-size: 24px; margin-bottom: 4px; }
+.subtitle { color: #86868b; font-size: 14px; margin-bottom: 20px; }
+.back-link { font-size: 13px; color: #0066cc; text-decoration: none; display: inline-block; margin-bottom: 12px; }
+.back-link:hover { text-decoration: underline; }
+
+/* Stats */
+.stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.stat { background: white; border-radius: 12px; padding: 14px 18px; min-width: 120px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.stat-value { font-size: 26px; font-weight: 700; }
+.stat-label { font-size: 11px; color: #86868b; margin-top: 2px; }
+.stat-ok .stat-value { color: #34c759; }
+.stat-warn .stat-value { color: #ff9500; }
+
+/* Controls */
+.controls { background: white; border-radius: 12px; padding: 14px; margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.controls label { font-size: 12px; color: #86868b; display: block; margin-bottom: 2px; }
+.controls select, .controls input[type=text] { font-size: 13px; padding: 6px 10px; border: 1px solid #d2d2d7; border-radius: 8px; background: white; min-width: 100px; }
+.controls input[type=range] { width: 160px; }
+.controls input[type=text] { min-width: 180px; }
+.search-icon { position: relative; }
+.search-icon::before { content: '🔍'; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 12px; }
+.search-icon input { padding-left: 28px; }
+
+/* Table */
+table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+thead { background: #f5f5f7; position: sticky; top: 0; z-index: 1; }
+th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; color: #86868b; cursor: pointer; user-select: none; white-space: nowrap; border-bottom: 1px solid #e5e5ea; }
+th:hover { color: #1d1d1f; }
+td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafafa; }
+tr.favorite td { background: #f0fdf4; }
+tr.over-budget td { opacity: 0.55; }
+
+/* Badges */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge-ok { background: #d1fae5; color: #065f46; }
+.badge-over { background: #fee2e2; color: #991b1b; }
+.badge-pending { background: #fef3c7; color: #92400e; }
+.badge-active { background: #d1fae5; color: #065f46; }
+.badge-zone { background: #ede9fe; color: #5b21b6; }
+.badge-drop { background: #dbeafe; color: #1e40af; }
+
+/* Score */
+.score-bar { display: inline-block; width: 50px; height: 8px; background: #e5e5ea; border-radius: 4px; overflow: hidden; vertical-align: middle; margin-right: 4px; }
+.score-fill { height: 100%; border-radius: 4px; }
+
+/* Star */
+.star { cursor: pointer; font-size: 16px; user-select: none; filter: grayscale(1); opacity: 0.3; transition: all .15s; }
+.star:hover, .star.active { filter: none; opacity: 1; }
+
+/* Links */
+a { color: #0066cc; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.price-fmt { font-weight: 600; font-variant-numeric: tabular-nums; }
+.footer { text-align: center; color: #86868b; font-size: 12px; margin-top: 24px; padding: 16px 0; }
+
+/* Cards (mobile) */
+.cards { display: none; }
+.card { background: white; border-radius: 14px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.card-price { font-size: 20px; font-weight: 700; }
+.card-address { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.card-details { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 12px; font-size: 12px; color: #424245; margin-bottom: 10px; }
+.card-details dt { color: #86868b; }
+.card-details dd { font-weight: 500; }
+.card-badges { margin-bottom: 8px; display: flex; gap: 4px; flex-wrap: wrap; }
+.card-notes { font-size: 11px; color: #86868b; line-height: 1.4; margin-bottom: 10px; border-top: 1px solid #f0f0f0; padding-top: 8px; }
+.card-link { display: inline-block; background: #0066cc; color: white; padding: 7px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 600; }
+.card-link:hover { background: #0055b3; }
+
+/* Mortgage calc */
+.mortgage-calc { background: white; border-radius: 12px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.mortgage-calc h3 { font-size: 13px; margin-bottom: 10px; }
+.mortgage-calc .calc-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.mortgage-calc label { font-size: 12px; color: #86868b; }
+.mortgage-calc .calc-result { font-size: 18px; font-weight: 700; margin-left: auto; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  table { display: none; }
+  .cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  body { padding: 12px; }
+  .controls { flex-direction: column; align-items: stretch; }
+  .stats { gap: 8px; }
+  .stat { min-width: 0; flex: 1; padding: 10px 12px; }
+  .stat-value { font-size: 20px; }
+}
+
+/* Print */
+@media print {
+  .controls, .mortgage-calc, .back-link, .footer, .star { display: none; }
+  body { background: white; padding: 0; }
+  table { box-shadow: none; }
+  th { background: #f0f0f0; }
+  .stat { box-shadow: none; border: 1px solid #e5e5ea; }
+}
