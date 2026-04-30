@@ -49,7 +49,8 @@
 
 <script>
 const listings = [
-
+  { id:101, direccion:"Plaça del Centre — Obra reciente, 85 m², 2 hab, 2 baños, par", precio:485000, superficie:85, terraza:"?", hab:2, banos:2, planta:"?", ascensor:null, estado:"habitaclia", puntuacion:5, maxPunt:12, topPick:true, parking:false, reformado:false, isNew:true, link:"https://english.habitaclia.com/buy-flat-barri_de_les_corts-barcelona-i9873002105043.htm", alsoIn:null, notas:"Verificado activo. Parking incluido, AC conductos." },
+  { id:102, direccion:"C/ Déu i Mata — Ático con azotea 70 m², renovado, finca 1930", precio:499000, superficie:70, terraza:"?", hab:2, banos:1, planta:"?", ascensor:null, estado:"habitaclia", puntuacion:5, maxPunt:12, topPick:true, parking:false, reformado:false, isNew:true, link:"https://english.habitaclia.com/buy-penthouse-barri_de_les_corts-barcelona-i53071000000154.htm", alsoIn:null, notas:"Verificado activo. Azotea privada 70 m². Sin ascensor 3ª planta." }
 ];
 
 function getFavs() { try { return JSON.parse(localStorage.getItem('lc-favs') || '[]'); } catch { return []; } }
