@@ -10,7 +10,7 @@
 
 <a class="back-link" href="index.html">← Volver al índice</a>
 <h1>Les Corts — Pisos 2-3 habitaciones</h1>
-<p class="subtitle">Última actualización: 30 abril 2026 · 2-3 hab, balcón/terraza, planta 1ª+, ≤500.000€</p>
+<p class="subtitle">Última actualización: 30 abril 2026</p>
 
 <div class="stats" id="stats"></div>
 
@@ -49,38 +49,7 @@
 
 <script>
 const listings = [
-  {
-    id: 101, direccion: "Plaça del Centre — Obra reciente",
-    precio: 485000, superficie: 85, terraza: "Balcón", hab: 2, banos: 2,
-    planta: "Alta", ascensor: true, estado: "Obra reciente (2008)",
-    puntuacion: 7, maxPunt: 12, parking: true, reformado: true,
-    link: "https://english.habitaclia.com/buy-flat-barri_de_les_corts-barcelona-i9873002105043.htm",
-    notas: "85 m² con parking incluido, 2 baños, AC por conductos. Cerca metro L3 y estación Sants."
-  },
-  {
-    id: 102, direccion: "C/ Déu i Mata — Ático con azotea 70 m²",
-    precio: 499000, superficie: 70, terraza: "15 m² + azotea 70 m²", hab: 2, banos: 1,
-    planta: "3ª", ascensor: false, estado: "Renovado, finca 1930",
-    puntuacion: 6, maxPunt: 12, parking: false, reformado: true,
-    link: "https://english.habitaclia.com/buy-penthouse-barri_de_les_corts-barcelona-i53071000000154.htm",
-    notas: "Azotea privada de 70 m². Sin ascensor (3ª planta). A 200 m de L'Illa Diagonal."
-  },
-  {
-    id: 103, direccion: "C/ Gelabert — Ático planta 8ª, vistas jardines",
-    precio: 359000, superficie: 60, terraza: "Terraza pequeña", hab: 2, banos: null,
-    planta: "8ª", ascensor: true, estado: "Por confirmar",
-    puntuacion: 5, maxPunt: 12, parking: false, reformado: false,
-    link: "https://www.idealista.com/venta-viviendas/barcelona/les-corts/con-aticos/",
-    notas: "El más económico. Vistas a jardines Joan Altisent. 60 m² justos. Buscar en Idealista: Gelabert 359k."
-  },
-  {
-    id: 104, direccion: "C/ Comandante Benítez — Ático planta 7ª",
-    precio: 495000, superficie: 60, terraza: "25 m²", hab: 2, banos: null,
-    planta: "7ª", ascensor: null, estado: "Por confirmar",
-    puntuacion: 3, maxPunt: 12, parking: false, reformado: false,
-    link: "https://www.idealista.com/venta-viviendas/barcelona/les-corts/con-aticos/",
-    notas: "Terraza 25 m² orientación Este. Zona La Maternitat. Confirmar ascensor y precio exacto."
-  }
+
 ];
 
 function getFavs() { try { return JSON.parse(localStorage.getItem('lc-favs') || '[]'); } catch { return []; } }
