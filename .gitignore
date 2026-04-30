@@ -13,3 +13,5 @@ target-purchase/retirados.md
 target-purchase/dashboard.html
 scripts/
 .claude/
+logs/
+target-purchase/known-listings.json

@@ -89,6 +89,11 @@ a:hover { text-decoration: underline; }
   .stat-value { font-size: 20px; }
 }
 
+/* New listing badge */
+.badge-new { background: #ef4444; color: white; animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+.badge-price-drop { background: #3b82f6; color: white; }
+
 /* Print */
 @media print {
   .controls, .mortgage-calc, .back-link, .footer, .star { display: none; }
