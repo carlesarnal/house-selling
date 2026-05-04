@@ -3,15 +3,11 @@ node_modules/
 /tmp/
 *.png
 
-# Datos privados - no subir
+# Private data — local only
 my-house/
 market-analysis.md
-houses-in-market/
-target-purchase/opciones-vivienda.md
-target-purchase/opciones-amiga-les-corts.md
-target-purchase/retirados.md
-target-purchase/dashboard.html
+target-purchase/
 scripts/
 .claude/
 logs/
-target-purchase/known-listings.json
+*-cookies.json
