@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casas en Barcelona y alrededores</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<a class="back-link" href="index.html">← Volver al índice</a>
+<h1>Casas, chalets y adosados</h1>
+<p class="subtitle">Última actualización: 4 mayo 2026</p>
+
+<div class="stats" id="stats"></div>
+
+<div class="controls">
+  <div class="search-icon"><label>Buscar</label><input type="text" id="filterText" placeholder="Zona, calle..."></div>
+  <div><label>Zona</label><select id="filterZona"><option value="">Todas</option></select></div>
+  <div><label>Habitaciones</label><select id="filterHab"><option value="">Todas</option><option value="3">3+</option><option value="4">4+</option></select></div>
+  <div><label>Precio máx.</label><input type="range" id="filterPrecio" min="200000" max="650000" step="10000" value="620000"><span id="precioLabel"> 620.000€</span></div>
+  <div><label>Solo matching</label><select id="filterMatch"><option value="">Todos</option><option value="si" selected>Solo matching</option></select></div>
+  <div><label>Favoritos</label><select id="filterFav"><option value="">Todos</option><option value="si">Solo ⭐</option></select></div>
+  <div><label>Ordenar</label><select id="sortField"><option value="precio-asc">Precio ↑</option><option value="precio-desc">Precio ↓</option><option value="superficie-desc">Superficie ↓</option><option value="eurm2-asc">€/m² ↑</option></select></div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>⭐</th>
+      <th>Zona</th>
+      <th>Dirección</th>
+      <th>Precio</th>
+      <th>m²</th>
+      <th>€/m²</th>
+      <th>Hab</th>
+      <th>Baños</th>
+      <th>Fuente</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<div class="cards" id="cards"></div>
+
+<p class="footer">⭐ se guardan en tu navegador · Casas en zonas buenas de Barcelona y alrededores</p>
+
+<script>
+const listings = [
+  { id:1, zona:"Sant Andreu", direccion:"House Calle de sócrates. Espectacular casa en venda al carre", precio:200000, superficie:null, hab:6, banos:3, estado:"habitaclia", matching:true, link:"https://english.habitaclia.com/buy-house-sant_andreu_de_palomar-barcelona-i4389004336098.htm", notas:"House Calle de sócrates. Espectacular casa en venda al carrer socrates Barcelona - Sant Andreu de Pa" },
+  { id:2, zona:"Horta", direccion:"¡Ya has visto todos los anuncios de tu búsqueda! Te proponem", precio:220000, superficie:56, hab:2, banos:1, estado:"habitaclia", matching:false, link:"https://english.habitaclia.com/buy-flat-in-barcelona-i44494000000782.htm", notas:"¡Ya has visto todos los anuncios de tu búsqueda! Te proponemos otros que pueden interesarte 12 photo" },
+  { id:3, zona:"Horta", direccion:"Piso Flat in Carrer del canigó 97. Promoción obra nueva / pl", precio:390000, superficie:105, hab:2, banos:1, estado:"habitaclia", matching:false, link:"https://english.habitaclia.com/buy-flat-street_del_canigo_97-barcelona-i3050004446538.htm", notas:"Piso Flat in Carrer del canigó 97. Promoción obra nueva / planta baja con jardín de 105m2 Barcelona " },
+  { id:4, zona:"Horta", direccion:"Piso Flat Carrer del canigó Barcelona - Horta 54m2 - 2 rooms", precio:390000, superficie:54, hab:2, banos:1, estado:"habitaclia", matching:false, link:"https://english.habitaclia.com/buy-flat-in-barcelona-i3050004446545.htm", notas:"Piso Flat Carrer del canigó Barcelona - Horta 54m2 - 2 rooms - 1 bath - 7.222€/m2 VIVIENDAS ACABADOS" },
+  { id:5, zona:"habitaclia", direccion:"It is located in another area of Gràcia House Carrer de ca l", precio:870000, superficie:193, hab:3, banos:3, estado:"habitaclia", matching:false, link:"https://english.habitaclia.com/buy-house-in-barcelona-i5612002809317.htm", notas:"It is located in another area of Gràcia House Carrer de ca l'alegre de dalt. Casa a reformar en vent" }
+];
+
+function getFavs() { try { return JSON.parse(localStorage.getItem('casas-favs') || '[]'); } catch { return []; } }
+function setFavs(f) { localStorage.setItem('casas-favs', JSON.stringify(f)); }
+function toggleFav(id) { const f = getFavs(); const i = f.indexOf(id); if (i >= 0) f.splice(i, 1); else f.push(id); setFavs(f); render(); }
+
+function fmt(n) { return n ? n.toLocaleString('es-ES') + '€' : '—'; }
+
+function renderStats(filtered) {
+  const total = filtered.length;
+  const prices = filtered.filter(l=>l.precio).map(l=>l.precio);
+  const avgM2 = Math.round(filtered.filter(l=>l.superficie).reduce((a,l)=>a+l.superficie,0) / (filtered.filter(l=>l.superficie).length||1));
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-value">${total}</div><div class="stat-label">Casas</div></div>
+    <div class="stat"><div class="stat-value">${prices.length ? Math.round(Math.min(...prices)/1000)+'k' : '—'}</div><div class="stat-label">Desde</div></div>
+    <div class="stat"><div class="stat-value">${prices.length ? Math.round(Math.max(...prices)/1000)+'k' : '—'}</div><div class="stat-label">Hasta</div></div>
+    <div class="stat"><div class="stat-value">${avgM2||'—'}</div><div class="stat-label">m² medio</div></div>
+    <div class="stat"><div class="stat-value">${getFavs().length}</div><div class="stat-label">Favoritos ⭐</div></div>
+  `;
+}
+
+function render() {
+  const text = document.getElementById('filterText').value.toLowerCase();
+  const zona = document.getElementById('filterZona').value;
+  const habMin = parseInt(document.getElementById('filterHab').value) || 0;
+  const precioMax = parseInt(document.getElementById('filterPrecio').value);
+  const matchF = document.getElementById('filterMatch').value;
+  const favFilter = document.getElementById('filterFav').value;
+  const [sortKey, sortDir] = document.getElementById('sortField').value.split('-');
+  const favs = getFavs();
+
+  document.getElementById('precioLabel').textContent = ` ${precioMax.toLocaleString('es-ES')}€`;
+
+  let filtered = listings.map(l => ({ ...l, eurm2: l.precio && l.superficie ? Math.round(l.precio/l.superficie) : null }));
+  filtered = filtered.filter(l => {
+    if (text && !(l.direccion + ' ' + l.zona + ' ' + l.notas).toLowerCase().includes(text)) return false;
+    if (zona && l.zona !== zona) return false;
+    if (habMin && (!l.hab || l.hab < habMin)) return false;
+    if (l.precio && l.precio > precioMax) return false;
+    if (matchF === 'si' && !l.matching) return false;
+    if (favFilter === 'si' && !favs.includes(l.id)) return false;
+    return true;
+  });
+  filtered.sort((a, b) => {
+    let va, vb;
+    switch(sortKey) {
+      case 'precio': va = a.precio||999999; vb = b.precio||999999; break;
+      case 'superficie': va = a.superficie||0; vb = b.superficie||0; break;
+      case 'eurm2': va = a.eurm2||999999; vb = b.eurm2||999999; break;
+    }
+    return sortDir === 'asc' ? va - vb : vb - va;
+  });
+
+  renderStats(filtered);
+
+  document.getElementById('tbody').innerHTML = filtered.map(l => {
+    const isFav = favs.includes(l.id);
+    return `<tr class="${l.matching?'':'over-budget'}" title="${l.notas}">
+      <td><span class="star ${isFav?'active':''}" onclick="toggleFav(${l.id})">⭐</span></td>
+      <td><span class="badge badge-zone">${l.zona}</span></td>
+      <td>${l.direccion}</td>
+      <td class="price-fmt">${fmt(l.precio)}</td>
+      <td>${l.superficie||'?'}</td>
+      <td>${l.eurm2 ? l.eurm2.toLocaleString('es-ES')+'€' : '—'}</td>
+      <td>${l.hab||'?'}</td>
+      <td>${l.banos||'?'}</td>
+      <td>${l.estado}</td>
+      <td><a href="${l.link}" target="_blank">Ver →</a></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('cards').innerHTML = filtered.map(l => {
+    const isFav = favs.includes(l.id);
+    return `<div class="card ${l.matching?'':''}">
+      <div class="card-top"><div class="card-price">${fmt(l.precio)}</div><span class="star ${isFav?'active':''}" onclick="toggleFav(${l.id})">⭐</span></div>
+      <div class="card-address">${l.direccion}</div>
+      <div class="card-badges"><span class="badge badge-zone">${l.zona}</span></div>
+      <dl class="card-details">
+        <dt>m²</dt><dd>${l.superficie||'?'} (${l.eurm2?l.eurm2.toLocaleString('es-ES')+'€/m²':'?'})</dd>
+        <dt>Hab/Baños</dt><dd>${l.hab||'?'} / ${l.banos||'?'}</dd>
+      </dl>
+      <div class="card-notes">${l.notas}</div>
+      <a class="card-link" href="${l.link}" target="_blank">Ver anuncio →</a>
+    </div>`;
+  }).join('');
+}
+
+const zones = [...new Set(listings.map(l => l.zona))].sort();
+const sel = document.getElementById('filterZona');
+zones.forEach(z => { const o = document.createElement('option'); o.value = z; o.textContent = z; sel.appendChild(o); });
+
+['filterText','filterZona','filterHab','filterPrecio','filterMatch','filterFav','sortField'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+});
+render();
+</script>
+</body>
+</html>
