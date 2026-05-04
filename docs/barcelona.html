@@ -29,6 +29,7 @@
   <div><label>Zona</label><select id="filterZona"><option value="">Todas</option></select></div>
   <div><label>Cuota máx.</label><select id="filterCuota"><option value="">Sin filtro</option><option value="1500" selected>≤ 1.500€</option><option value="1600">≤ 1.600€</option><option value="9999">Todas</option></select></div>
   <div><label>Precio máx.</label><input type="range" id="filterPrecio" min="400000" max="650000" step="10000" value="620000"><span id="precioLabel"> 620.000€</span></div>
+  <div><label>Habitaciones</label><select id="filterHab"><option value="">Todas</option><option value="3">3+</option><option value="4">4+</option></select></div>
   <div><label>Verificación</label><select id="filterVerif"><option value="">Todas</option><option value="activo">Activos</option><option value="pendiente">Pendientes</option></select></div>
   <div><label>Favoritos</label><select id="filterFav"><option value="">Todos</option><option value="si">Solo ⭐</option></select></div>
   <div><label>Ordenar</label><select id="sortField"><option value="puntuacion-desc">Puntuación ↓</option><option value="precio-asc">Precio ↑</option><option value="cuota-asc">Cuota ↑</option><option value="eurm2-asc">€/m² ↑</option><option value="superficie-desc">Superficie ↓</option></select></div>
@@ -347,6 +348,7 @@ function render() {
   const zona = document.getElementById('filterZona').value;
   const cuotaMax = parseFloat(document.getElementById('filterCuota').value) || 99999;
   const precioMax = parseInt(document.getElementById('filterPrecio').value);
+  const habMin = parseInt(document.getElementById('filterHab').value) || 0;
   const verif = document.getElementById('filterVerif').value;
   const favFilter = document.getElementById('filterFav').value;
   const [sortKey, sortDir] = document.getElementById('sortField').value.split('-');
@@ -359,6 +361,7 @@ function render() {
   filtered = filtered.filter(l => {
     if (text && !(l.direccion + ' ' + l.zona + ' ' + l.notas).toLowerCase().includes(text)) return false;
     if (zona && l.zona !== zona) return false;
+    if (habMin && (!l.hab || l.hab < habMin)) return false;
     if (l.cuota && l.cuota > cuotaMax) return false;
     if (l.precio && l.precio > precioMax) return false;
     if (verif && l.verificacion !== verif) return false;
@@ -449,7 +452,7 @@ const sel = document.getElementById('filterZona');
 zones.forEach(z => { const o = document.createElement('option'); o.value = z; o.textContent = z; sel.appendChild(o); });
 
 // Events
-['filterText','filterZona','filterCuota','filterPrecio','filterVerif','filterFav','sortField'].forEach(id => {
+['filterText','filterZona','filterHab','filterCuota','filterPrecio','filterVerif','filterFav','sortField'].forEach(id => {
   document.getElementById(id).addEventListener('input', render);
 });
 ['calcRate','calcYears','calcEntrada'].forEach(id => {
